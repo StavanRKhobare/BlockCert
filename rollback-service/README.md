@@ -20,3 +20,7 @@ only hashes. See project report Section 5.4.
 
 This entire module can be fully built and unit-tested against
 `MockModelAdapter.local_train(inject_drift=True)` today.
+
+## Build Log
+
+- [D0] Python package setup (requirements incl. web3, importable subpackages, shared/ import path via tests/conftest.py, local .venv) — files: rollback-service/requirements.txt, rollback-service/checkpoint_store/__init__.py, rollback-service/drift_monitor/__init__.py, rollback-service/chain_bridge/__init__.py, rollback-service/tests/__init__.py, rollback-service/tests/conftest.py, rollback-service/.gitignore.
