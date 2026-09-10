@@ -17,3 +17,7 @@ FedAvg round loop: client registration, weight aggregation, round scheduling.
 `client_sim/simulated_client.py` takes a `ModelAdapter` in its constructor.
 Swap `MockModelAdapter` for the real vision model's adapter later; nothing
 else here changes.
+
+## Build Log
+
+- [C0] Python package setup (requirements, importable subpackages, shared/ import path via tests/conftest.py, local .venv) — files: fl-orchestrator/requirements.txt, fl-orchestrator/client_sim/__init__.py, fl-orchestrator/server/__init__.py, fl-orchestrator/tests/__init__.py, fl-orchestrator/tests/conftest.py, fl-orchestrator/.gitignore.
