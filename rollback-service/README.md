@@ -29,3 +29,4 @@ This entire module can be fully built and unit-tested against
 - [D3] Sliding-window drift monitor (sustained suspicion + accuracy decline trigger) — files: rollback-service/drift_monitor/window_tracker.py, rollback-service/tests/test_window_tracker.py.
 - [D4] Rollback executor with integrity verification (refuses unverified restores) — files: rollback-service/drift_monitor/rollback_executor.py, rollback-service/tests/test_rollback_executor.py.
 - [D5] Blockchain checkpoint anchoring via ChainClient (live-node integration test) — files: rollback-service/chain_bridge/chain_client.py, rollback-service/tests/test_chain_client.py.
+- [D6] Full suite + end-to-end drift/restore scenario (15-round simulation, exact pre-drift restore) — files: rollback-service/tests/test_e2e_scenario.py.
