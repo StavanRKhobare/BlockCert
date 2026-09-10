@@ -1,0 +1,21 @@
+{
+  "name": "blockchain",
+  "version": "1.0.0",
+  "description": "Fully standalone from the ML side — build this in parallel with everything else, starting immediately. See report Section 5.6 for the full Ethereum-style-testnet vs. Hyperledger-style trade-off; scaffolded here for a public/testnet-style prototype first (recommended in the report).",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^6.1.2",
+    "hardhat": "^2.29.1",
+    "typescript": "^5.9.3"
+  }
+}

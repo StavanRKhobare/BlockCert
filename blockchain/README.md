@@ -23,3 +23,7 @@ a public/testnet-style prototype first (recommended in the report).
   `chain_client.anchor_checkpoint(checkpoint)`.
 - Everything here is testable today with dummy hashes and dummy DIDs —
   zero dependency on the vision model or even on real training data.
+
+## Build Log
+
+- [A0] Hardhat TypeScript project scaffolded (hardhat 2 + toolbox hh2 + typescript 5, empty contracts/) — files: blockchain/package.json, blockchain/hardhat.config.ts, blockchain/tsconfig.json, blockchain/contracts/ (empty).
