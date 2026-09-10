@@ -28,6 +28,7 @@ a public/testnet-style prototype first (recommended in the report).
 
 - [A0] Hardhat TypeScript project scaffolded (hardhat 2 + toolbox hh2 + typescript 5, empty contracts/) — files: blockchain/package.json, blockchain/hardhat.config.ts, blockchain/tsconfig.json, blockchain/contracts/ (empty).
 - [A1] CheckpointAnchor contract + tests (array-indexed checkpoints, hash+URI only, no access control) — files: blockchain/contracts/CheckpointAnchor.sol, blockchain/test/CheckpointAnchor.test.ts.
+- [A2] DIDRegistry contract + tests (unique-DID registration with owner + timestamp) — files: blockchain/contracts/DIDRegistry.sol, blockchain/test/DIDRegistry.test.ts.
 - [A3] Staking contract + tests (OZ v5 Ownable, owner-only slash with payout, no dispute logic) — files: blockchain/contracts/Staking.sol, blockchain/test/Staking.test.ts.
 - [A5] Passport contract + tests (validated lifecycle event types, per-device entry index) — files: blockchain/contracts/Passport.sol, blockchain/test/Passport.test.ts.
 - [A6] Deployment script writing {address, abi, deployedAt} artifacts to deployments/ (not run; needs a node in A7) — files: blockchain/scripts/deploy.ts, blockchain/package.json.
