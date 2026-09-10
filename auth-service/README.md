@@ -27,3 +27,4 @@ and the model-worsening-detection discussion).
 - [B1] Golden reference statistics (mean/covariance/inverse + 99th-percentile Mahalanobis threshold, regularized inverse) — files: auth-service/golden_reference/reference_stats.py, auth-service/tests/test_reference_stats.py.
 - [B2] Suspicion scoring (outlier fraction, mean shift, micro-cluster) — files: auth-service/scoring/suspicion.py, auth-service/tests/test_suspicion.py.
 - [B3] Reference-set performance-delta check (threshold-at-0.5 accuracy arithmetic) — files: auth-service/scoring/reference_perf_check.py, auth-service/tests/test_reference_perf_check.py.
+- [B4] Combined suspicion score + pass/fail decision (placeholder weights, exact formula) — files: auth-service/scoring/combined.py, auth-service/tests/test_combined.py.
