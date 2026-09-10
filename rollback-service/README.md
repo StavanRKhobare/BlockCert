@@ -27,3 +27,4 @@ This entire module can be fully built and unit-tested against
 - [D1] Merkle-style checkpoint hashing (per-layer SHA-256, alphabetically ordered root) — files: rollback-service/checkpoint_store/hasher.py, rollback-service/tests/test_hasher.py.
 - [D2] Local checkpoint store + delta compression (npz store with integrity check, elementwise deltas) — files: rollback-service/checkpoint_store/local_store.py, rollback-service/checkpoint_store/delta.py, rollback-service/tests/test_local_store.py, rollback-service/tests/test_delta.py.
 - [D3] Sliding-window drift monitor (sustained suspicion + accuracy decline trigger) — files: rollback-service/drift_monitor/window_tracker.py, rollback-service/tests/test_window_tracker.py.
+- [D4] Rollback executor with integrity verification (refuses unverified restores) — files: rollback-service/drift_monitor/rollback_executor.py, rollback-service/tests/test_rollback_executor.py.
