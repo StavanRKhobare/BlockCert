@@ -9,6 +9,11 @@ class SimulatedClient:
         self.adapter = adapter
         self.client_did = client_did
 
+    @property
+    def model_adapter(self) -> ModelAdapter:
+        """Alias for ``adapter`` (the name the round manager uses)."""
+        return self.adapter
+
     def run_round(
         self, inject_drift: bool = False
     ) -> dict[str, np.ndarray]:
