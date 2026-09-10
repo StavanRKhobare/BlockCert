@@ -25,3 +25,4 @@ and the model-worsening-detection discussion).
 
 - [B0] Python package setup (requirements, importable subpackages, shared/ import path via tests/conftest.py, local .venv) — files: auth-service/requirements.txt, auth-service/golden_reference/__init__.py, auth-service/scoring/__init__.py, auth-service/tests/__init__.py, auth-service/tests/conftest.py, auth-service/.gitignore.
 - [B1] Golden reference statistics (mean/covariance/inverse + 99th-percentile Mahalanobis threshold, regularized inverse) — files: auth-service/golden_reference/reference_stats.py, auth-service/tests/test_reference_stats.py.
+- [B2] Suspicion scoring (outlier fraction, mean shift, micro-cluster) — files: auth-service/scoring/suspicion.py, auth-service/tests/test_suspicion.py.
