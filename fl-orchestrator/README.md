@@ -21,3 +21,4 @@ else here changes.
 ## Build Log
 
 - [C0] Python package setup (requirements, importable subpackages, shared/ import path via tests/conftest.py, local .venv) — files: fl-orchestrator/requirements.txt, fl-orchestrator/client_sim/__init__.py, fl-orchestrator/server/__init__.py, fl-orchestrator/tests/__init__.py, fl-orchestrator/tests/conftest.py, fl-orchestrator/.gitignore.
+- [C1] Client simulation + non-IID partition harness — files: fl-orchestrator/client_sim/partition.py, fl-orchestrator/client_sim/simulated_client.py, fl-orchestrator/tests/test_partition.py.
