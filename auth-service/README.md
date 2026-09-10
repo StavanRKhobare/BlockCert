@@ -20,3 +20,7 @@ and the model-worsening-detection discussion).
 - Adaptive per-client thresholds vs. one global threshold.
 - Track suspicion *trend* over rounds, not just single-round value (feeds
   rollback-service's drift monitor).
+
+## Build Log
+
+- [B0] Python package setup (requirements, importable subpackages, shared/ import path via tests/conftest.py, local .venv) — files: auth-service/requirements.txt, auth-service/golden_reference/__init__.py, auth-service/scoring/__init__.py, auth-service/tests/__init__.py, auth-service/tests/conftest.py, auth-service/.gitignore.
