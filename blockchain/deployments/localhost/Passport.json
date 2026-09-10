@@ -1,0 +1,157 @@
+{
+  "address": "0x610178dA211FEF7D417bC0e6FeD39F05609AD788",
+  "abi": [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "entryId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "deviceId",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "eventType",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "evidenceHash",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "modelVersionHash",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "actorDid",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "timestamp",
+          "type": "uint256"
+        }
+      ],
+      "name": "PassportEventSubmitted",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "entryId",
+          "type": "uint256"
+        }
+      ],
+      "name": "getEvent",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "deviceId",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "eventType",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "evidenceHash",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "modelVersionHash",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "actorDid",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "timestamp",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "deviceId",
+          "type": "string"
+        }
+      ],
+      "name": "getEventsForDevice",
+      "outputs": [
+        {
+          "internalType": "uint256[]",
+          "name": "entryIds",
+          "type": "uint256[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "deviceId",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "eventType",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "evidenceHash",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "modelVersionHash",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "actorDid",
+          "type": "string"
+        }
+      ],
+      "name": "submitEvent",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "entryId",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "deployedAt": "2026-09-10T15:51:50.440Z"
+}

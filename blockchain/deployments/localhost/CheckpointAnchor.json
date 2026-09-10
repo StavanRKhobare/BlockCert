@@ -1,0 +1,162 @@
+{
+  "address": "0x0165878A594ca255338adfa4d48449f69242Eb8F",
+  "abi": [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "checkpointId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "roundNumber",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "weightsHash",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "offChainUri",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "parentHash",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "bool",
+          "name": "isDelta",
+          "type": "bool"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "submitter",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "timestamp",
+          "type": "uint256"
+        }
+      ],
+      "name": "CheckpointAnchored",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "roundNumber",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "weightsHash",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "offChainUri",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "parentHash",
+          "type": "string"
+        },
+        {
+          "internalType": "bool",
+          "name": "isDelta",
+          "type": "bool"
+        }
+      ],
+      "name": "anchorCheckpoint",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "checkpointId",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "checkpointId",
+          "type": "uint256"
+        }
+      ],
+      "name": "getCheckpoint",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "roundNumber",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "weightsHash",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "offChainUri",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "parentHash",
+          "type": "string"
+        },
+        {
+          "internalType": "bool",
+          "name": "isDelta",
+          "type": "bool"
+        },
+        {
+          "internalType": "address",
+          "name": "submitter",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "timestamp",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getLatestCheckpointId",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "deployedAt": "2026-09-10T15:51:50.298Z"
+}
