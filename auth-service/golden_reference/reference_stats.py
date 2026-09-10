@@ -13,11 +13,14 @@ _REGULARIZATION = 1e-6
 def compute_reference_stats(embeddings: np.ndarray) -> dict:
     """Compute reference statistics of an (N, D) embedding array.
 
-    Returns ``{"mean", "covariance", "inv_covariance", "threshold"}`` where
-    ``threshold`` is the 99th percentile of the Mahalanobis distance of every
-    input embedding from the mean. The covariance is regularized with
-    ``1e-6 * identity`` before inverting so a singular covariance never
-    raises.
+    Returns ``{"mean", "covariance", "inv_covariance", "threshold",
+    "embeddings"}`` where ``threshold`` is the 99th percentile of the
+    Mahalanobis distance of every input embedding from the mean, and
+    ``"embeddings"`` is the exact same (N, D) array passed in, unchanged
+    (carried so downstream callers such as ``score_client`` can reuse the raw
+    reference set, e.g. for the micro-cluster signal). The covariance is
+    regularized with ``1e-6 * identity`` before inverting so a singular
+    covariance never raises.
     """
     embeddings = np.asarray(embeddings, dtype=float)
     mean = np.mean(embeddings, axis=0)
@@ -34,4 +37,5 @@ def compute_reference_stats(embeddings: np.ndarray) -> dict:
         "covariance": covariance,
         "inv_covariance": inv_covariance,
         "threshold": threshold,
+        "embeddings": embeddings,
     }
