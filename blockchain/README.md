@@ -1,0 +1,25 @@
+# blockchain
+
+Fully standalone from the ML side — build this in parallel with everything
+else, starting immediately. See report Section 5.6 for the full
+Ethereum-style-testnet vs. Hyperledger-style trade-off; scaffolded here for
+a public/testnet-style prototype first (recommended in the report).
+
+## Contracts to build (contracts/)
+- `DIDRegistry.sol` — client identity registration.
+- `CheckpointAnchor.sol` — records {round_number, weights_hash,
+  off_chain_uri} per round; this is the ENTIRE on-chain footprint of the
+  rollback mechanism — never weights themselves.
+- `Staking.sol` — stake / slash logic.
+- `Dispute.sol` — provisional-flag -> challenge-window -> finalize/overturn
+  pattern (see report Section 5.6, false-positive handling).
+- `Passport.sol` — device lifecycle passport (provenance-api writes here).
+
+## Build now
+- `scripts/deploy.py` — deploy all contracts to a local Hardhat/Anvil
+  testnet (see infra/docker-compose.yml).
+- `client/chain_client.py` — thin Python wrapper (web3.py) other services
+  import; e.g. `rollback-service` calls
+  `chain_client.anchor_checkpoint(checkpoint)`.
+- Everything here is testable today with dummy hashes and dummy DIDs —
+  zero dependency on the vision model or even on real training data.
