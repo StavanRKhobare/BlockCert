@@ -35,7 +35,22 @@ def score_client(
     # labeled images, which do not exist until the vision model does. Wiring
     # it is gateway work for batch 2.
     ref_perf_delta = 0.0
-    combined, passed = combine_scores(outlier_frac, shift, cluster, ref_perf_delta)
+    # Calibrated threshold rides along in reference_stats (same pattern as
+    # the "embeddings" key): no change to this function's own signature.
+    # Only passed through when present, so combine_scores' own default
+    # applies untouched otherwise.
+    if "calibrated_threshold" in reference_stats:
+        combined, passed = combine_scores(
+            outlier_frac,
+            shift,
+            cluster,
+            ref_perf_delta,
+            threshold=reference_stats["calibrated_threshold"],
+        )
+    else:
+        combined, passed = combine_scores(
+            outlier_frac, shift, cluster, ref_perf_delta
+        )
     return SuspicionScore(
         client_did=client_did,
         round_number=round_number,

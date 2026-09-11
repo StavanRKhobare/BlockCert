@@ -30,3 +30,4 @@ and the model-worsening-detection discussion).
 - [B4] Combined suspicion score + pass/fail decision (placeholder weights, exact formula) — files: auth-service/scoring/combined.py, auth-service/tests/test_combined.py.
 - [B5] Public entrypoint score_client (exact integration signature; B1 amended to also return raw "embeddings" for the micro-cluster signal) — files: auth-service/entrypoint.py, auth-service/tests/test_entrypoint.py, auth-service/golden_reference/reference_stats.py, auth-service/tests/test_reference_stats.py.
 - [B6] Full auth-service regression suite green (5 passed, 0 failed) — files: auth-service/README.md.
+- [B4.5] Threshold calibration from known-honest clients (mean + k*std; score_client reads reference_stats["calibrated_threshold"]) — files: auth-service/scoring/calibration.py, auth-service/tests/test_calibration.py, auth-service/entrypoint.py.
