@@ -24,3 +24,4 @@ else here changes.
 - [C1] Client simulation + non-IID partition harness — files: fl-orchestrator/client_sim/partition.py, fl-orchestrator/client_sim/simulated_client.py, fl-orchestrator/tests/test_partition.py.
 - [C2] FedAvg aggregation function (sample-count weighted, ValueError on empty) — files: fl-orchestrator/server/aggregate.py, fl-orchestrator/tests/test_aggregate.py.
 - [C3] Authentication gating via real score_client (passing sub-list + full scores list) — files: fl-orchestrator/server/round_manager.py, fl-orchestrator/tests/test_round_manager_auth.py, fl-orchestrator/tests/conftest.py, fl-orchestrator/client_sim/simulated_client.py, fl-orchestrator/requirements.txt.
+- [C4] Full round loop (real checkpoint_round; ingest/execute still TODO stubs) — files: fl-orchestrator/server/round_manager.py, fl-orchestrator/tests/test_round_manager_full.py, fl-orchestrator/tests/conftest.py, fl-orchestrator/.gitignore.

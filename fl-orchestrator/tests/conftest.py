@@ -1,7 +1,8 @@
 """Make the repo root importable so `shared.*` resolves from fl-orchestrator/.
 
 Also puts `auth-service/` on the path so the real `score_client` entrypoint
-is imported (touchpoint #1) — never a local copy of it.
+is imported (touchpoint #1), and `rollback-service/` so the real
+`checkpoint_round` is imported (touchpoint #2) — never local copies of them.
 
 Do not copy shared/ or auth-service/ files here — always import the real ones.
 """
@@ -14,3 +15,4 @@ _REPO_ROOT = os.path.dirname(os.path.dirname(_TESTS_DIR))
 
 sys.path.insert(0, _REPO_ROOT)
 sys.path.insert(0, os.path.join(_REPO_ROOT, "auth-service"))
+sys.path.insert(0, os.path.join(_REPO_ROOT, "rollback-service"))
