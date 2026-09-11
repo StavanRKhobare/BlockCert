@@ -1,34 +1,29 @@
-from functools import partial
-
-import entrypoint as entrypoint_module
-from entrypoint import score_client
-from scoring.combined import combine_scores
 from shared.mock_model.mock_adapter import (
     MockModelAdapter,
     make_golden_reference,
 )
 
+from entrypoint import score_client
 from golden_reference.reference_stats import compute_reference_stats
+from scoring.calibration import calibrate_threshold
 
 
-def test_score_client_honest_passes_poisoned_fails(monkeypatch):
-    # The mock model's random embeddings do not separate at the production
-    # default threshold (3.0): even an honest contributor scores ~5.8, mostly
-    # from mean shift. Override the threshold in THIS TEST ONLY via the
-    # combiner's params; the production default in combined.py is unchanged.
-    # Deterministic seeds: honest ~5.8, poisoned ~25.7, so 10.0 separates.
-    monkeypatch.setattr(
-        entrypoint_module,
-        "combine_scores",
-        partial(combine_scores, threshold=10.0),
-    )
-
+def test_score_client_honest_passes_poisoned_fails():
+    # Mirror the real production flow: calibrate from known-honest clients
+    # (seeds 100-104, disjoint from golden 42-46 and fleet 0-7), stash the
+    # REAL calibrated number in reference_stats, then score through it —
+    # no monkeypatching, no guessed constants.
     reference_stats = compute_reference_stats(make_golden_reference())
+    calibration_clients = [
+        MockModelAdapter(f"calib-{i}", seed=100 + i) for i in range(5)
+    ]
+    calibrated = calibrate_threshold(reference_stats, calibration_clients)
+    reference_stats["calibrated_threshold"] = calibrated
 
-    # Honest baseline: fresh draw from a reference contributor (see B2 note:
-    # any unseen client center is ~100% outlying under this mock's non-IID
-    # design, so the honest baseline must come from the reference population).
-    honest_embeddings = MockModelAdapter("golden-0", seed=42).embed(n=50)
+    # Honest baseline: a primary-fleet client (seed 3). Under the calibrated
+    # threshold these pass (combined ~9.7 < ~9.98); only the poisoned client
+    # is rejected.
+    honest_embeddings = MockModelAdapter("client-3", seed=3).embed(n=50)
     poisoned_embeddings = MockModelAdapter("attacker", seed=999).embed(
         n=50, poisoned=True
     )
@@ -48,5 +43,6 @@ def test_score_client_honest_passes_poisoned_fails(monkeypatch):
 
     print(
         f"[B5] honest_passed={honest.passed} "
-        f"poisoned_passed={poisoned.passed}"
+        f"poisoned_passed={poisoned.passed} "
+        f"calibrated_threshold_used={calibrated}"
     )
