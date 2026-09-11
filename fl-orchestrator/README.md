@@ -26,3 +26,4 @@ else here changes.
 - [C3] Authentication gating via real score_client (passing sub-list + full scores list) — files: fl-orchestrator/server/round_manager.py, fl-orchestrator/tests/test_round_manager_auth.py, fl-orchestrator/tests/conftest.py, fl-orchestrator/client_sim/simulated_client.py, fl-orchestrator/requirements.txt.
 - [C4] Full round loop (real checkpoint_round; ingest/execute still TODO stubs) — files: fl-orchestrator/server/round_manager.py, fl-orchestrator/tests/test_round_manager_full.py, fl-orchestrator/tests/conftest.py, fl-orchestrator/.gitignore.
 - [C4] Full round loop revised (registry threading + REAL D3/D4, calibrated honest clients) — files: fl-orchestrator/server/round_manager.py, fl-orchestrator/tests/test_round_manager_full.py.
+- [C5] 20-round simulation with injected attacker at round 12 (armed flag patching, calibrated auth) — files: fl-orchestrator/tests/test_full_simulation.py.
