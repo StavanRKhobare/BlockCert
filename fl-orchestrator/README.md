@@ -27,3 +27,4 @@ else here changes.
 - [C4] Full round loop (real checkpoint_round; ingest/execute still TODO stubs) — files: fl-orchestrator/server/round_manager.py, fl-orchestrator/tests/test_round_manager_full.py, fl-orchestrator/tests/conftest.py, fl-orchestrator/.gitignore.
 - [C4] Full round loop revised (registry threading + REAL D3/D4, calibrated honest clients) — files: fl-orchestrator/server/round_manager.py, fl-orchestrator/tests/test_round_manager_full.py.
 - [C5] 20-round simulation with injected attacker at round 12 (armed flag patching, calibrated auth) — files: fl-orchestrator/tests/test_full_simulation.py.
+- [C6] Full fl-orchestrator regression suite green (5 passed, 0 failed) — files: fl-orchestrator/README.md.
