@@ -17,14 +17,16 @@ describe("Passport", function () {
       "repair",
       "evidence-repair-1",
       "model-v1",
-      "did:example:tech-1"
+      "did:example:tech-1",
+      "sig-repair-1"
     );
     await passport.submitEvent(
       deviceId,
       "inspection",
       "evidence-inspection-1",
       "model-v1",
-      "did:example:inspector-1"
+      "did:example:inspector-1",
+      "sig-inspection-1"
     );
 
     const entryIds = await passport.getEventsForDevice(deviceId);
@@ -41,13 +43,15 @@ describe("Passport", function () {
     const evidenceHash = "evidence-resale-1";
     const modelVersionHash = "model-v2";
     const actorDid = "did:example:seller-1";
+    const signature = "sig-resale-1";
 
     const tx = await passport.submitEvent(
       deviceId,
       eventType,
       evidenceHash,
       modelVersionHash,
-      actorDid
+      actorDid,
+      signature
     );
     const receipt = await tx.wait();
     const block = await ethers.provider.getBlock(receipt!.blockNumber);
@@ -61,6 +65,7 @@ describe("Passport", function () {
     expect(entry.evidenceHash).to.equal(evidenceHash);
     expect(entry.modelVersionHash).to.equal(modelVersionHash);
     expect(entry.actorDid).to.equal(actorDid);
+    expect(entry.signature).to.equal(signature);
     expect(entry.timestamp).to.equal(BigInt(block!.timestamp));
   });
 
@@ -73,7 +78,8 @@ describe("Passport", function () {
         "teleportation",
         "evidence-x",
         "model-v1",
-        "did:example:actor-1"
+        "did:example:actor-1",
+        "sig-x"
       )
     ).to.be.revertedWith("invalid event type");
   });

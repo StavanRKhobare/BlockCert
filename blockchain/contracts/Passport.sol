@@ -11,6 +11,7 @@ contract Passport {
         string evidenceHash;
         string modelVersionHash;
         string actorDid;
+        string signature;
         uint256 timestamp;
     }
 
@@ -21,6 +22,7 @@ contract Passport {
         string evidenceHash,
         string modelVersionHash,
         string actorDid,
+        string signature,
         uint256 timestamp
     );
 
@@ -44,7 +46,8 @@ contract Passport {
         string calldata eventType,
         string calldata evidenceHash,
         string calldata modelVersionHash,
-        string calldata actorDid
+        string calldata actorDid,
+        string calldata signature
     ) external returns (uint256 entryId) {
         require(_isValidEventType(eventType), "invalid event type");
         entryId = entries.length;
@@ -55,6 +58,7 @@ contract Passport {
                 evidenceHash: evidenceHash,
                 modelVersionHash: modelVersionHash,
                 actorDid: actorDid,
+                signature: signature,
                 timestamp: block.timestamp
             })
         );
@@ -66,6 +70,7 @@ contract Passport {
             evidenceHash,
             modelVersionHash,
             actorDid,
+            signature,
             block.timestamp
         );
     }
@@ -87,6 +92,7 @@ contract Passport {
             string memory evidenceHash,
             string memory modelVersionHash,
             string memory actorDid,
+            string memory signature,
             uint256 timestamp
         )
     {
@@ -97,6 +103,7 @@ contract Passport {
             entry.evidenceHash,
             entry.modelVersionHash,
             entry.actorDid,
+            entry.signature,
             entry.timestamp
         );
     }

@@ -34,3 +34,4 @@ a public/testnet-style prototype first (recommended in the report).
 - [A5] Passport contract + tests (validated lifecycle event types, per-device entry index) — files: blockchain/contracts/Passport.sol, blockchain/test/Passport.test.ts.
 - [A6] Deployment script writing {address, abi, deployedAt} artifacts to deployments/ (not run; needs a node in A7) — files: blockchain/scripts/deploy.ts, blockchain/package.json.
 - [A7] End-to-end deployment smoke test (local node, 5 deployments, CheckpointAnchor round-trip) — files: blockchain/scripts/smoke_test.ts, blockchain/deployments/localhost/*.json.
+- [A5.1] Passport signature field (struct/event/submitEvent/getEvent + viaIR for stack-too-deep, redeployed) — files: blockchain/contracts/Passport.sol, blockchain/test/Passport.test.ts, blockchain/hardhat.config.ts, blockchain/deployments/localhost/*.json.

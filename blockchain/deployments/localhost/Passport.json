@@ -42,6 +42,12 @@
         },
         {
           "indexed": false,
+          "internalType": "string",
+          "name": "signature",
+          "type": "string"
+        },
+        {
+          "indexed": false,
           "internalType": "uint256",
           "name": "timestamp",
           "type": "uint256"
@@ -83,6 +89,11 @@
         {
           "internalType": "string",
           "name": "actorDid",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "signature",
           "type": "string"
         },
         {
@@ -139,6 +150,11 @@
           "internalType": "string",
           "name": "actorDid",
           "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "signature",
+          "type": "string"
         }
       ],
       "name": "submitEvent",
@@ -153,5 +169,5 @@
       "type": "function"
     }
   ],
-  "deployedAt": "2026-09-12T12:56:10.569Z"
+  "deployedAt": "2026-09-12T13:02:35.760Z"
 }
