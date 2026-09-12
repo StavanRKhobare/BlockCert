@@ -171,8 +171,25 @@ function buildCheckpoints(): Checkpoint[] {
 
 export const CHECKPOINTS: Checkpoint[] = buildCheckpoints();
 
-export const STAKE_EVENTS: StakeEvent[] = [
-  {
+// CD5 fleet context (revises this CD2 file — expected, since CD2 only
+// generated data for ONE client). The 7 OTHER fleet members' characteristic
+// honest combined_score values, measured from the real auth-service pipeline
+// for make_clients(8) seeds 0-7 EXCLUDING this client's own slot (client-3,
+// seed 3, honest combined 9.3716 — that slot is filled live from
+// SUSPICION_HISTORY instead, so the fleet reacts when client-3 turns).
+// Static per client across rounds (user decision): only client-3's own score
+// moves (honest rounds 1-11, poisoned 12-20); the rest stay honest.
+export const FLEET_HONEST_SCORES: number[] = [
+  8.7462, // client-0
+  7.5985, // client-1
+  8.4854, // client-2
+  7.7873, // client-4
+  7.7806, // client-5
+  9.1614, // client-6
+  8.3007, // client-7
+];
+
+export const STAKE_EVENTS: StakeEvent[] = [  {
     client_did: CLIENT_DID,
     event_type: "staked",
     amount: 100.0,

@@ -5,6 +5,7 @@
 import { useCallback, useEffect, useState } from "react";
 import {
   CHECKPOINTS,
+  FLEET_HONEST_SCORES,
   PASSPORT_ENTRIES,
   PASSPORT_ENTRY_ROUNDS,
   STAGE_DURATION_MS,
@@ -33,6 +34,11 @@ export interface RoundFeed {
   checkpoints: Checkpoint[];
   stakeEvents: StakeEvent[];
   passportEntries: PassportEntry[];
+  // CD5: the 7 OTHER fleet members' combined scores for the current round
+  // (their characteristic honest values — static per client). This client's
+  // own score is NOT included here; read it from suspicionHistory's latest
+  // entry, so the ranking reacts when this client turns malicious.
+  fleetScoresThisRound: number[];
 }
 
 export function useRoundFeed(): RoundFeed {
@@ -90,5 +96,6 @@ export function useRoundFeed(): RoundFeed {
     passportEntries: PASSPORT_ENTRIES.filter(
       (_, i) => PASSPORT_ENTRY_ROUNDS[i] <= progress.round,
     ),
+    fleetScoresThisRound: FLEET_HONEST_SCORES,
   };
 }
