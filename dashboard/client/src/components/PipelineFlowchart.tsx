@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { motion } from "framer-motion";
 import {
   Background,
+  Position,
   ReactFlow,
   type Edge,
   type Node,
@@ -97,8 +98,8 @@ export default function PipelineFlowchart() {
           tooltip: STAGE_TOOLTIPS[stage],
           status: stageStatusFor(stage, currentStage, currentRound),
         },
-        sourcePosition: ("right" as const),
-        targetPosition: ("left" as const),
+        sourcePosition: Position.Right,
+        targetPosition: Position.Left,
         style: { width: NODE_WIDTH },
       })),
     [currentStage, currentRound],
