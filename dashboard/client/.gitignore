@@ -1,0 +1,5 @@
+# Vite client hygiene (mirrors blockchain/.gitignore pattern)
+node_modules/
+dist/
+dist-ssr/
+*.local
