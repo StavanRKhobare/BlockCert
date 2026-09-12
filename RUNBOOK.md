@@ -98,3 +98,16 @@ npm run build      # production build (stricter than tsc --noEmit — keep green
 2. `cd blockchain && npm run deploy:localhost` (Terminal 2, once per node restart)
 3. Repo root: all four `pytest` suites (Section 2)
 4. `cd dashboard/client && npx vitest run && npm run build`
+
+## Troubleshooting
+
+- `ModuleNotFoundError: No module named 'web3'` (rollback-service /
+  provenance-api collection errors) → the root requirements were never
+  installed in that terminal's Python. Fix: `python3 -m pip install -r
+  requirements.txt` from repo root (add `--break-system-packages` on
+  Ubuntu/Debian, or use a venv). Note `auth-service`/`fl-orchestrator`
+  pass without it, which is why the missing package only shows up in the
+  later suites.
+- Chain-integration tests fail with `ConnectionError` telling you to start
+  `npx hardhat node` → start the node (Section 1) and redeploy, then rerun.
+  They never fake a pass against a dead node — by design.
