@@ -1,0 +1,17 @@
+# Root convenience requirements for BlockFedEDAuth-R.
+# Union of every runnable Python service's own requirements file —
+# installing this once covers all of them. The per-service files remain
+# the source of truth (auth-service/requirements.txt,
+# fl-orchestrator/requirements.txt, rollback-service/requirements.txt,
+# provenance-api/requirements.txt).
+#
+# Usage (from repo root):
+#   python3 -m pip install -r requirements.txt
+# On Debian/Ubuntu (PEP 668 "externally managed" error) either use a venv
+# or add --break-system-packages.
+
+numpy            # all services: vectors, weights, embeddings
+scikit-learn     # auth-service: KMeans micro-cluster score
+pydantic         # all services: shared.interfaces.schemas
+pytest           # all services: test suites
+web3             # rollback-service + provenance-api: chain bridges
