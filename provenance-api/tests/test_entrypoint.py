@@ -52,8 +52,19 @@ def test_submit_and_history_roundtrip():
     assert first.signature == "sig-repair"
     assert second.signature == "sig-resale"
 
-    # Invalid event types fail fast locally: no chain call is made, so a
-    # fresh device still has an empty history afterward.
+    # P2.1: the submit-time entry must match the later history read exactly —
+    # both source the same on-chain record (chain timestamp, stored sig).
+    signature_persisted = (
+        history[0].signature == "sig-repair" == first.signature
+        and history[1].signature == "sig-resale" == second.signature
+    )
+    assert signature_persisted
+    timestamp_consistent_across_submit_and_read = (
+        history[0].timestamp == first.timestamp
+        and history[1].timestamp == second.timestamp
+    )
+    assert timestamp_consistent_across_submit_and_read
+
     # Invalid event types fail fast locally: no chain call is made, so the
     # same fresh device still has an empty history afterward.
     fresh_id = f"device-p2-fresh-{uuid.uuid4().hex[:8]}"
@@ -73,4 +84,9 @@ def test_submit_and_history_roundtrip():
         f"[P2] history_length=2 order_correct={order_correct} "
         f"invalid_event_type_rejected_locally="
         f"{invalid_event_type_rejected_locally}"
+    )
+    print(
+        f"[P2.1] signature_persisted={signature_persisted} "
+        f"timestamp_consistent_across_submit_and_read="
+        f"{timestamp_consistent_across_submit_and_read}"
     )

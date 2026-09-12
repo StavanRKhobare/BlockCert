@@ -37,6 +37,7 @@ def test_passport_client_roundtrip():
         "evidence-p1-repair",
         "model-v1",
         "did:example:tech-1",
+        "sig-p1-repair",
     )
     assert isinstance(entry_id, int) and entry_id >= 0
     assert tx_hash.startswith("0x") and len(tx_hash) == 66
@@ -48,6 +49,7 @@ def test_passport_client_roundtrip():
         "evidence_hash": "evidence-p1-repair",
         "model_version_hash": "model-v1",
         "actor_did": "did:example:tech-1",
+        "signature": "sig-p1-repair",
         "timestamp": event["timestamp"],
     }
     assert roundtrip_exact
@@ -58,6 +60,7 @@ def test_passport_client_roundtrip():
         "evidence-p1-inspection",
         "model-v1",
         "did:example:inspector-1",
+        "sig-p1-inspection",
     )
     entry_ids = client.get_events_for_device(device_id)
     two_events_same_device = entry_ids == [entry_id, second_id]

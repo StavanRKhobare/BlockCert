@@ -15,3 +15,4 @@ blockchain/, not on the FL system at all — fully buildable in parallel.
 - [P1] Passport chain bridge via PassportClient (live-node integration test, entry IDs from contract events) — files: provenance-api/chain_bridge/passport_client.py, provenance-api/tests/test_passport_client.py.
 - [P2] Public entrypoint (fail-fast validation, hashed evidence, chronological history) — files: provenance-api/entrypoint.py, provenance-api/tests/test_entrypoint.py.
 - [P3] Full provenance-api regression suite green (2 passed, 0 failed) — files: provenance-api/README.md.
+- [P2.1] Real signature + chain-sourced timestamp (submit reads back on-chain record) — files: provenance-api/chain_bridge/passport_client.py, provenance-api/entrypoint.py, provenance-api/tests/test_entrypoint.py, provenance-api/tests/test_passport_client.py.

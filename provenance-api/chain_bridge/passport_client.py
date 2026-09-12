@@ -53,6 +53,7 @@ class PassportClient:
         evidence_hash: str,
         model_version_hash: str,
         actor_did: str,
+        signature: str,
     ) -> tuple[int, str]:
         """Submit a lifecycle event; return (entry_id, tx_hash).
 
@@ -62,7 +63,12 @@ class PassportClient:
         """
         sender = self.w3.eth.accounts[0]
         tx_hash = self.contract.functions.submitEvent(
-            device_id, event_type, evidence_hash, model_version_hash, actor_did
+            device_id,
+            event_type,
+            evidence_hash,
+            model_version_hash,
+            actor_did,
+            signature,
         ).transact({"from": sender})
         receipt = self.w3.eth.wait_for_transaction_receipt(tx_hash)
         events = self.contract.events.PassportEventSubmitted().process_receipt(
@@ -88,6 +94,7 @@ class PassportClient:
             evidence_hash,
             model_version_hash,
             actor_did,
+            signature,
             timestamp,
         ) = self.contract.functions.getEvent(entry_id).call()
         return {
@@ -96,5 +103,6 @@ class PassportClient:
             "evidence_hash": evidence_hash,
             "model_version_hash": model_version_hash,
             "actor_did": actor_did,
+            "signature": signature,
             "timestamp": int(timestamp),
         }

@@ -6,7 +6,6 @@ submit lifecycle events, and read back per-device histories as
 """
 
 import hashlib
-import time
 
 from shared.interfaces.schemas import PassportEntry
 
@@ -32,23 +31,29 @@ def submit_lifecycle_event(
     """Submit one device lifecycle event and return the full entry.
 
     ``signature`` is passed through as given, not verified (gateway scope).
+    The returned entry is built from an immediate on-chain read-back, so
+    submission and later retrieval source the same record.
     """
     if event_type not in _VALID_EVENT_TYPES:
         raise ValueError(f"invalid event type: {event_type!r}")
     evidence_hash = hashlib.sha256(evidence).hexdigest()
-    # Chain write; the returned (entry_id, tx_hash) is not part of the
-    # PassportEntry schema, so it is intentionally not kept here.
-    PassportClient().submit_event(
-        device_id, event_type, evidence_hash, model_version_hash, actor_did
+    entry_id, _tx_hash = PassportClient().submit_event(
+        device_id,
+        event_type,
+        evidence_hash,
+        model_version_hash,
+        actor_did,
+        signature,
     )
+    event = PassportClient().get_event(entry_id)
     return PassportEntry(
-        device_id=device_id,
-        event_type=event_type,
-        evidence_hash=evidence_hash,
-        model_version_hash=model_version_hash,
-        actor_did=actor_did,
-        signature=signature,
-        timestamp=time.time(),
+        device_id=event["device_id"],
+        event_type=event["event_type"],
+        evidence_hash=event["evidence_hash"],
+        model_version_hash=event["model_version_hash"],
+        actor_did=event["actor_did"],
+        signature=event["signature"],
+        timestamp=float(event["timestamp"]),
     )
 
 
@@ -64,9 +69,8 @@ def get_passport_history(device_id: str) -> list[PassportEntry]:
                 event_type=event["event_type"],
                 evidence_hash=event["evidence_hash"],
                 model_version_hash=event["model_version_hash"],
-                # Chain reads carry no signature; signing happens at submit.
                 actor_did=event["actor_did"],
-                signature="",
+                signature=event["signature"],
                 timestamp=float(event["timestamp"]),
             )
         )
