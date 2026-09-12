@@ -1,0 +1,21 @@
+# Virtual environments
+.venv/
+venv/
+.env/
+
+# Python bytecode and caches
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.mypy_cache/
+
+# Coverage
+.coverage
+htmlcov/
+
+# Editors and OS noise
+.vscode/
+.idea/
+*.swp
+.DS_Store
