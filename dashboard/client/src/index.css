@@ -40,21 +40,45 @@
 }
 
 /* Pipeline flowchart stage nodes (CD3). Status is asserted in tests via
-   data-status + these class names; visuals via Tailwind + framer-motion. */
+   data-status + these class names; visuals via Tailwind + framer-motion.
+   CD9 audit: the ACTIVE stage is in-progress = pending per the shared
+   legend, so it glows amber (was emerald). Completed/upcoming stay
+   neutral slate — pipeline position is not a pass/fail verdict. */
 @layer components {
   .stage-node {
     @apply flex h-16 w-40 items-center justify-center rounded-xl border px-2 text-center text-sm font-semibold tracking-tight transition-colors duration-300;
   }
   .stage-active {
-    @apply border-emerald-400 bg-emerald-500/20 text-emerald-100;
+    @apply border-amber-400 bg-amber-500/20 text-amber-100;
     box-shadow:
-      0 0 0 1px rgba(52, 211, 153, 0.6),
-      0 0 24px rgba(52, 211, 153, 0.45);
+      0 0 0 1px rgba(251, 191, 36, 0.6),
+      0 0 24px rgba(251, 191, 36, 0.45);
   }
   .stage-completed {
     @apply border-slate-600 bg-slate-800/80 text-slate-400;
   }
   .stage-upcoming {
     @apply border-dashed border-slate-700 bg-slate-900/60 text-slate-500;
+  }
+}
+
+/* Teacher mode (CD9): presentation layer for evaluation. The toggle adds
+   .teacher-mode to the app root; annotation callouts hidden by default
+   appear, and type scales up. Purely visual — asserted by eye, not tests. */
+@layer components {
+  .teacher-note {
+    display: none;
+  }
+  .teacher-mode {
+    font-size: 18px;
+  }
+  .teacher-mode h1 {
+    @apply text-3xl;
+  }
+  .teacher-mode h3 {
+    @apply text-base;
+  }
+  .teacher-mode .teacher-note {
+    @apply mt-2 block rounded-lg border border-amber-400/60 bg-amber-500/10 p-2 text-sm text-amber-100;
   }
 }

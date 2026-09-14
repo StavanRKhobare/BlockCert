@@ -1,122 +1,121 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import './App.css'
+import { useState } from "react";
+import ContributionVolume from "./components/ContributionVolume";
+import DeviceLookup from "./components/DeviceLookup";
+import FleetStanding from "./components/FleetStanding";
+import Legend from "./components/Legend";
+import PassportSubmissions from "./components/PassportSubmissions";
+import PipelineFlowchart from "./components/PipelineFlowchart";
+import StakeTrustPanel from "./components/StakeTrustPanel";
+import SuspicionHistoryChart from "./components/SuspicionHistoryChart";
+import TeacherModeToggle from "./components/TeacherModeToggle";
+import { RoundFeedProvider, useRoundFeed } from "./mock/useRoundFeed";
 
-function App() {
-  const [count, setCount] = useState(0)
+function Controls() {
+  const {
+    currentRound,
+    currentStage,
+    isPlaying,
+    play,
+    pause,
+    reset,
+    step,
+  } = useRoundFeed();
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
-
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+    <div className="flex flex-wrap items-center gap-2 rounded-xl border border-slate-800 bg-slate-900/60 p-3">
+      <button
+        type="button"
+        data-testid="control-play"
+        onClick={play}
+        disabled={isPlaying}
+        className="rounded-lg border border-emerald-500/60 bg-emerald-500/15 px-3 py-1.5 text-sm font-medium text-emerald-100 disabled:opacity-40"
+      >
+        Play
+      </button>
+      <button
+        type="button"
+        data-testid="control-pause"
+        onClick={pause}
+        disabled={!isPlaying}
+        className="rounded-lg border border-slate-700 px-3 py-1.5 text-sm text-slate-200 disabled:opacity-40"
+      >
+        Pause
+      </button>
+      <button
+        type="button"
+        data-testid="control-step"
+        onClick={step}
+        className="rounded-lg border border-slate-700 px-3 py-1.5 text-sm text-slate-200"
+      >
+        Step
+      </button>
+      <button
+        type="button"
+        data-testid="control-reset"
+        onClick={reset}
+        className="rounded-lg border border-slate-700 px-3 py-1.5 text-sm text-slate-200"
+      >
+        Reset
+      </button>
+      <span className="ml-2 text-sm text-slate-300">
+        Round{" "}
+        <span data-testid="current-round" className="font-bold tabular-nums">
+          {currentRound}
+        </span>{" "}
+        ·{" "}
+        <span data-testid="current-stage" className="tabular-nums">
+          {currentStage}
+        </span>
+      </span>
+    </div>
+  );
 }
 
-export default App
+export default function App() {
+  const [teacherMode, setTeacherMode] = useState(false);
+
+  return (
+    <RoundFeedProvider>
+      <div
+        data-testid="app-root"
+        className={`min-h-screen bg-slate-950 text-slate-200 ${teacherMode ? "teacher-mode" : ""}`}
+      >
+        <div className="mx-auto max-w-6xl space-y-4 p-4 pb-24">
+          <header className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h1 className="text-xl font-bold text-slate-50">
+                My Client Dashboard
+              </h1>
+              <p className="text-sm text-slate-400">
+                did:example:client-3 · replay the 20-round scenario
+              </p>
+            </div>
+            <TeacherModeToggle
+              enabled={teacherMode}
+              onToggle={() => setTeacherMode((v) => !v)}
+            />
+          </header>
+
+          <Controls />
+
+          <section className="grid gap-4 md:grid-cols-2">
+            <div className="md:col-span-2">
+              <PipelineFlowchart />
+            </div>
+            <SuspicionHistoryChart />
+            <FleetStanding />
+            <StakeTrustPanel />
+            <ContributionVolume />
+            <div className="md:col-span-2">
+              <PassportSubmissions />
+            </div>
+            <div className="md:col-span-2">
+              <DeviceLookup />
+            </div>
+          </section>
+        </div>
+        <Legend />
+      </div>
+    </RoundFeedProvider>
+  );
+}

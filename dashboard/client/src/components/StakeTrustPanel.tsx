@@ -27,11 +27,21 @@ export function computeTrust(history: SuspicionScore[]): TrustScore {
   return { passed, total, pct: (passed / total) * 100 };
 }
 
+// CD9 audit: colors follow the shared legend — staked/restored are
+// healthy (green), slashed is fail (red). (Restored was sky-blue.)
 const EVENT_STYLES: Record<StakeEvent["event_type"], string> = {
   staked: "bg-emerald-400",
   slashed: "bg-rose-400",
-  restored: "bg-sky-400",
+  restored: "bg-emerald-400",
 };
+
+// Trust-gauge fill follows the legend: green while trust is high, amber
+// while disputed, red once the client mostly fails.
+export function trustGaugeClass(pct: number): string {
+  if (pct >= 80) return "bg-emerald-400";
+  if (pct >= 50) return "bg-amber-400";
+  return "bg-rose-400";
+}
 
 export default function StakeTrustPanel() {
   const { currentRound, stakeEvents, suspicionHistory } = useRoundFeed();
@@ -97,15 +107,16 @@ export default function StakeTrustPanel() {
             {trust.pct.toFixed(1)}%
           </span>
         </div>
-        <div
-          data-testid="trust-gauge"
-          className="h-2 overflow-hidden rounded-full bg-slate-800"
-        >
           <div
-            className="h-full rounded-full bg-emerald-400"
-            style={{ width: `${trust.pct}%` }}
-          />
-        </div>
+            data-testid="trust-gauge"
+            className="h-2 overflow-hidden rounded-full bg-slate-800"
+          >
+            <div
+              data-testid="trust-gauge-fill"
+              className={`h-full rounded-full ${trustGaugeClass(trust.pct)}`}
+              style={{ width: `${trust.pct}%` }}
+            />
+          </div>
       </div>
     </div>
   );

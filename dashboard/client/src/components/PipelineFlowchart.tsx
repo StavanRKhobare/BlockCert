@@ -118,21 +118,27 @@ export default function PipelineFlowchart() {
   return (
     <div
       data-testid="pipeline-flowchart"
-      className="h-[280px] w-full rounded-xl border border-slate-800 bg-slate-950"
+      className="w-full rounded-xl border border-slate-800 bg-slate-950 p-2"
     >
-      <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        nodeTypes={nodeTypes}
-        defaultEdgeOptions={{ style: { stroke: "#475569", strokeWidth: 1.5 } }}
-        nodesDraggable={false}
-        nodesConnectable={false}
-        zoomOnScroll={false}
-        panOnDrag={false}
-        colorMode="dark"
-      >
-        <Background gap={24} color="#1e293b" />
-      </ReactFlow>
+      <div className="h-[280px] w-full">
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          nodeTypes={nodeTypes}
+          defaultEdgeOptions={{ style: { stroke: "#475569", strokeWidth: 1.5 } }}
+          nodesDraggable={false}
+          nodesConnectable={false}
+          zoomOnScroll={false}
+          panOnDrag={false}
+          colorMode="dark"
+        >
+          <Background gap={24} color="#1e293b" />
+        </ReactFlow>
+      </div>
+      <p data-testid="teacher-note-pipeline" className="teacher-note">
+        Teacher: the glowing amber node is the stage this client is in right
+        now — press step and watch it walk the pipeline once per round.
+      </p>
     </div>
   );
 }

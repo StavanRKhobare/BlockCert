@@ -95,9 +95,15 @@ export default function SuspicionHistoryChart() {
     return (
       <div
         data-testid="suspicion-history"
-        className="flex h-64 items-center justify-center rounded-xl border border-slate-800 bg-slate-900/60 text-sm text-slate-500"
+        className="rounded-xl border border-slate-800 bg-slate-900/60 p-4"
       >
-        No rounds completed yet — press play on the round feed.
+        <div className="flex h-64 items-center justify-center text-sm text-slate-500">
+          No rounds completed yet — press play on the round feed.
+        </div>
+        <p data-testid="teacher-note-suspicion" className="teacher-note">
+          Teacher: each point is one round&apos;s combined suspicion score —
+          watch it jump above the amber line at round 12.
+        </p>
       </div>
     );
   }
@@ -116,6 +122,10 @@ export default function SuspicionHistoryChart() {
           breakdown
         </span>
       </div>
+      <p data-testid="teacher-note-suspicion" className="teacher-note">
+        Teacher: points above the amber threshold failed authentication — click
+        one to see which signal (mean shift here) drove the verdict.
+      </p>
       <div className="h-64 w-full">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart

@@ -44,6 +44,14 @@ export default function FleetStanding() {
     );
   }, [suspicionHistory, fleetScoresThisRound]);
 
+  // CD9 audit: the self dot follows the shared legend — green while this
+  // client's latest round passed, red once it fails (was always red, which
+  // mis-signalled "fail" during the honest rounds 1-11).
+  const selfPassed =
+    suspicionHistory.length > 0
+      ? suspicionHistory[suspicionHistory.length - 1].passed
+      : true;
+
   const allScores = useMemo(() => {
     const scores =
       rank.selfScore == null
@@ -114,7 +122,11 @@ export default function FleetStanding() {
             <span
               data-testid="fleet-self-dot"
               title={`You: ${rank.selfScore.toFixed(4)}`}
-              className="absolute top-1/2 h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-slate-950 bg-rose-400 shadow-[0_0_12px_rgba(251,113,133,0.8)]"
+              className={`absolute top-1/2 h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-slate-950 ${
+                selfPassed
+                  ? "bg-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.8)]"
+                  : "bg-rose-400 shadow-[0_0_12px_rgba(251,113,133,0.8)]"
+              }`}
               style={{ left: `${pct(rank.selfScore)}%` }}
             />
           </div>

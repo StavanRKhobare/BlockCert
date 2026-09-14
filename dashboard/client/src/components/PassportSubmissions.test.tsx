@@ -18,7 +18,7 @@ vi.mock("../mock/useRoundFeed", () => ({
   }),
 }));
 
-it("renders one row per mock passport entry with truncated hash + copy button", () => {
+it("renders one row per mock passport entry with truncated hash + copy button", async () => {
   render(<PassportSubmissions />);
 
   const rows = screen.getAllByTestId("passport-row");
@@ -42,8 +42,9 @@ it("renders one row per mock passport entry with truncated hash + copy button", 
 
   // Copy button gives feedback on click (clipboard write is best-effort —
   // jsdom may lack it; the "Copied!" label is the asserted behavior).
+  // The label flips after an async clipboard attempt, so await it.
   fireEvent.click(copyButtons[0]);
-  const copyFeedback = copyButtons[0].textContent === "Copied!";
+  const copyFeedback = (await screen.findByText("Copied!")) != null;
 
   const allCorrect =
     submissionsRenderCorrect && rowsShowContent && copyExposesFullHash && copyFeedback;

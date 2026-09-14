@@ -2,7 +2,8 @@
 // Panels must call useRoundFeed() — never import roundFeed.ts directly —
 // so replacing this hook's internals with real gateway polling later
 // requires no changes to any consuming component.
-import { useCallback, useEffect, useState } from "react";
+import { createContext, createElement, useCallback, useContext, useEffect, useState } from "react";
+import type { ReactNode } from "react";
 import {
   ANOMALIES_DETECTED_PER_ROUND,
   CHECKPOINTS,
@@ -47,7 +48,7 @@ export interface RoundFeed {
   anomaliesDetected: number[];
 }
 
-export function useRoundFeed(): RoundFeed {
+export function useRoundFeedState(): RoundFeed {
   // stageIdx -1 = "idle" (rest state between cycles).
   const [progress, setProgress] = useState({ round: 0, stageIdx: -1 });
   const [isPlaying, setIsPlaying] = useState(false);
@@ -106,4 +107,27 @@ export function useRoundFeed(): RoundFeed {
     imagesExamined: IMAGES_EXAMINED_PER_ROUND.slice(0, progress.round),
     anomaliesDetected: ANOMALIES_DETECTED_PER_ROUND.slice(0, progress.round),
   };
+}
+
+// CD9: shared feed for the assembled app. Every panel calls useRoundFeed()
+// with no arguments, so mounting panels side-by-side would otherwise give
+// each its own independent round counter (App's play button would advance
+// only its own copy). RoundFeedProvider holds ONE state object in context;
+// App.tsx wraps all panels + controls in it so play/pause/step/reset move
+// every panel together. Outside a provider (unit tests, isolated renders)
+// useRoundFeed() falls back to local state — existing behavior unchanged.
+const RoundFeedContext = createContext<RoundFeed | null>(null);
+
+export function RoundFeedProvider({ children }: { children: ReactNode }) {
+  const feed = useRoundFeedState();
+  return createElement(RoundFeedContext.Provider, { value: feed }, children);
+}
+
+export function useRoundFeed(): RoundFeed {
+  const shared = useContext(RoundFeedContext);
+  // Always mounted (hook order stays stable); the local feed idles —
+  // its timer only runs while its own isPlaying is true, which never
+  // happens when a shared feed is returned instead.
+  const local = useRoundFeedState();
+  return shared ?? local;
 }
