@@ -1,0 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* SD0: Tailwind directives at top level (NOT inside a media query — that
+   was a real CD0 bug that scoped all utilities to dark-mode-only).
+   Dark mission-control theme layers land with later stories. */
