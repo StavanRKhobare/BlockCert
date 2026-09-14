@@ -246,3 +246,17 @@ export const PASSPORT_ENTRIES: PassportEntry[] = [
 // round each entry was "submitted" in lives here, internal to the mock.
 // The hook filters entries on this to preserve the as-of-now replay feel.
 export const PASSPORT_ENTRY_ROUNDS: number[] = [4, 9, 15];
+
+// CD7 contribution-volume placeholder (NOT measured — the real backend has
+// no per-round images/anomalies series yet; pending the real vision model,
+// which will supply true per-round counts via the gateway). Deterministic
+// ~50 images/round with anomaly counts in the low single digits.
+export const IMAGES_EXAMINED_PER_ROUND: number[] = [
+  50, 52, 48, 51, 49, 50, 53, 47, 50, 51,
+  49, 50, 52, 48, 51, 49, 50, 50, 48, 51,
+];
+
+export const ANOMALIES_DETECTED_PER_ROUND: number[] = [
+  2, 1, 3, 2, 1, 2, 3, 1, 2, 2,
+  1, 3, 2, 4, 3, 2, 3, 4, 2, 3,
+];

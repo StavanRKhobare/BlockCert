@@ -4,8 +4,10 @@
 // requires no changes to any consuming component.
 import { useCallback, useEffect, useState } from "react";
 import {
+  ANOMALIES_DETECTED_PER_ROUND,
   CHECKPOINTS,
   FLEET_HONEST_SCORES,
+  IMAGES_EXAMINED_PER_ROUND,
   PASSPORT_ENTRIES,
   PASSPORT_ENTRY_ROUNDS,
   STAGE_DURATION_MS,
@@ -39,6 +41,10 @@ export interface RoundFeed {
   // own score is NOT included here; read it from suspicionHistory's latest
   // entry, so the ranking reacts when this client turns malicious.
   fleetScoresThisRound: number[];
+  // CD7: per-round contribution volume, sliced to completed rounds only
+  // (placeholder series pending the real vision model — see roundFeed.ts).
+  imagesExamined: number[];
+  anomaliesDetected: number[];
 }
 
 export function useRoundFeed(): RoundFeed {
@@ -97,5 +103,7 @@ export function useRoundFeed(): RoundFeed {
       (_, i) => PASSPORT_ENTRY_ROUNDS[i] <= progress.round,
     ),
     fleetScoresThisRound: FLEET_HONEST_SCORES,
+    imagesExamined: IMAGES_EXAMINED_PER_ROUND.slice(0, progress.round),
+    anomaliesDetected: ANOMALIES_DETECTED_PER_ROUND.slice(0, progress.round),
   };
 }
