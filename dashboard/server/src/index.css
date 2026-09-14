@@ -5,3 +5,55 @@
 /* SD0: Tailwind directives at top level (NOT inside a media query — that
    was a real CD0 bug that scoped all utilities to dark-mode-only).
    Dark mission-control theme layers land with later stories. */
+
+@layer base {
+  html {
+    color-scheme: dark;
+  }
+  body {
+    @apply bg-slate-950 text-slate-200 antialiased;
+  }
+}
+
+/* System-map layer nodes (SD3). Status is asserted in tests via
+   data-status + these class names; visuals via Tailwind + framer-motion.
+   Same visual language as CD3's PipelineFlowchart: the ACTIVE layer is
+   in-progress = pending per the shared legend, so it glows amber. The
+   attribution layer is SD10 territory — grayed out, non-interactive. */
+@layer components {
+  .sys-node {
+    @apply flex h-16 w-44 items-center justify-center rounded-xl border px-2 text-center text-sm font-semibold tracking-tight transition-colors duration-300;
+  }
+  .sys-active {
+    @apply border-amber-400 bg-amber-500/20 text-amber-100;
+    box-shadow:
+      0 0 0 1px rgba(251, 191, 36, 0.6),
+      0 0 24px rgba(251, 191, 36, 0.45);
+  }
+  .sys-idle {
+    @apply border-slate-600 bg-slate-800/80 text-slate-300;
+  }
+  .sys-disabled {
+    @apply border-dashed border-slate-800 bg-slate-900/40 text-slate-600;
+  }
+}
+
+/* Teacher mode (own copy — deliberately duplicated from the client app so
+   either dashboard's presentation layer can change independently). */
+@layer components {
+  .teacher-note {
+    display: none;
+  }
+  .teacher-mode {
+    font-size: 18px;
+  }
+  .teacher-mode h1 {
+    @apply text-3xl;
+  }
+  .teacher-mode h3 {
+    @apply text-base;
+  }
+  .teacher-mode .teacher-note {
+    @apply mt-2 block rounded-lg border border-amber-400/60 bg-amber-500/10 p-2 text-sm text-amber-100;
+  }
+}
