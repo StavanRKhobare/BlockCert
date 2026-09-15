@@ -6,7 +6,10 @@ globals. Routers land in later stories; G0 wires only /health.
 
 from fastapi import FastAPI
 
+from routers.clients import router as clients_router
+
 app = FastAPI(title="BlockFedEDAuth-R gateway")
+app.include_router(clients_router)
 
 
 @app.get("/health")

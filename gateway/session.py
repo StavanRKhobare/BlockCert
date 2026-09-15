@@ -52,10 +52,14 @@ for _d in (
     os.path.join(_REPO_ROOT, "auth-service"),
     os.path.join(_REPO_ROOT, "fl-orchestrator"),
     os.path.join(_REPO_ROOT, "rollback-service"),
+    _SESSION_DIR,  # gateway's own `chain_clients` shadows nothing
+    # (renamed from chain_bridge: that top-level name belongs to
+    # rollback-service's plain imports per G0 — see build log).
 ):
     if _d not in sys.path:
         sys.path.insert(0, _d)
 
+from chain_clients.did_client import DIDClient, StakingClient
 from shared.interfaces.schemas import Checkpoint
 from shared.mock_model.mock_adapter import MockModelAdapter, make_golden_reference
 
@@ -80,6 +84,12 @@ STAGES = (
     "drift_monitoring",
     "broadcasting",
 )
+
+
+# Placeholder initial stake: 1 ETH-equivalent in wei. Arbitrary — covers
+# registration economics for the demo; a real value needs tokenomics this
+# build does not have (same honesty standard as every other placeholder).
+INITIAL_STAKE_WEI = 1_000_000_000_000_000_000
 
 
 class GatewaySession:
@@ -107,11 +117,50 @@ class GatewaySession:
         self.checkpoint_store = LocalCheckpointStore()
         self.max_rounds: int = max_rounds
         self.autonomous_task: asyncio.Task | None = None  # Story G4
+        # On-chain identities, parallel to self.clients by index.
+        self.did_client = DIDClient()
+        self.staking_client = StakingClient()
+        self.chain_dids: list[str] = [
+            f"did:bfa:client-{i}" for i in range(len(self.clients))
+        ]
+        self.client_stats: dict[str, dict[str, int]] = {
+            did: {"participated": 0, "passed": 0} for did in self.chain_dids
+        }
+        self._chain_ready = False
+        # Eager when possible (tests, scripts — no running loop), lazy
+        # otherwise: under ASGI a loop is already running at construction,
+        # so routers call register_all_clients() first (idempotent) instead.
+        try:
+            asyncio.get_running_loop()
+        except RuntimeError:
+            asyncio.run(self.register_all_clients())
 
     async def advance_stage(self, stage: str) -> None:
         self.current_stage = stage
         # artificial pacing so dashboards polling at ~200-300ms intervals can observe stage progression; real processing time will replace this once the vision model adds actual training latency
         await asyncio.sleep(0.4)
+
+    async def register_all_clients(self) -> None:
+        """Register + fund all 8 clients on-chain, once (idempotent).
+
+        Skips DIDs that are already registered and DIDs that already hold
+        a balance, so reruns (and restarts against a live node) never
+        double-register (the contract reverts) or double-stake. Safe to
+        call repeatedly; routers call it before serving chain reads.
+        """
+        if self._chain_ready:
+            return
+        for i in range(len(self.clients)):
+            did = self.chain_dids[i]
+            if not self.did_client.is_registered(did):
+                # Dummy public key: no real keypair infrastructure exists
+                # yet (known gap) — the string is an opaque placeholder.
+                self.did_client.register_did(
+                    did, f"placeholder-pubkey-client-{i}", f"Client {i}"
+                )
+            if self.staking_client.balance_of(did) == 0:
+                self.staking_client.stake(did, INITIAL_STAKE_WEI)
+        self._chain_ready = True
 
     async def step_round(self) -> dict:
         if self.current_round >= self.max_rounds:
@@ -155,5 +204,16 @@ class GatewaySession:
             )
         await self.advance_stage("broadcasting")
         self.round_history.append(summary)
+        # Per-client participation is certain (every client is submitted
+        # every round); per-client PASS attribution is not — the summary
+        # carries only totals. Passed counts advance for all clients on
+        # clean rounds only; on rounds with failures they hold (unknown
+        # attribution, never guessed). A future run_round returning
+        # per-client verdicts removes this boundary.
+        for stats in self.client_stats.values():
+            stats["participated"] += 1
+        if summary.get("n_failed", 0) == 0:
+            for stats in self.client_stats.values():
+                stats["passed"] += 1
         await self.advance_stage("idle")
         return summary
