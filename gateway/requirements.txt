@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+web3
+pydantic
+pytest
+httpx
+numpy            # auth-service / fl-orchestrator: vectors, weights, embeddings
+scikit-learn     # auth-service: KMeans micro-cluster score
