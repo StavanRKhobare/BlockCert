@@ -144,6 +144,12 @@ class GatewaySession:
         self.dispute_client = DisputeClient()
         self.open_disputes: dict[int, dict] = {}
         self.challenge_window_seconds = CHALLENGE_WINDOW_SECONDS
+        # Device IDs seen via POST /passport/events (G11). The Passport
+        # contract has NO list-all-devices method (only per-device
+        # getEventsForDevice), so the system-wide ledger endpoint replays
+        # per-device histories for exactly these IDs — session-scoped,
+        # oldest-submitted order, duplicates ignored.
+        self.known_device_ids: list[str] = []
         # On-chain identities, parallel to self.clients by index.
         self.did_client = DIDClient()
         self.staking_client = StakingClient()
@@ -223,6 +229,11 @@ class GatewaySession:
                 tx = self.staking_client.stake(did, INITIAL_STAKE_WEI)
                 self._log_tx(tx, "stake", "Staking")
         self._chain_ready = True
+
+    def record_device(self, device_id: str) -> None:
+        """Remember a device ID for the system-wide ledger (G11)."""
+        if device_id not in self.known_device_ids:
+            self.known_device_ids.append(device_id)
 
     async def _settle_due_disputes(self) -> None:
         """Finalize open disputes past their deadline; slash if rejected."""

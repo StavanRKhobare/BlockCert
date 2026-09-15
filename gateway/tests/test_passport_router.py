@@ -69,3 +69,41 @@ def test_submit_and_fetch_device_history():
     print(f"[G7] submit_and_fetch_correct={submit_and_fetch_correct}")
     assert submit_and_fetch_correct
     print("[G7] STATUS=PASS")
+
+
+def test_system_wide_ledger_aggregates_known_devices():
+    """G11: POST tracks device IDs; GET /passport/all merges, newest first."""
+    from main import app
+    from routers import passport
+    from session import GatewaySession
+
+    session = GatewaySession()
+    passport.set_session(session)
+    try:
+        devices = ["did:bfa:g11-dev-a", "did:bfa:g11-dev-b"]
+        for i, device_id in enumerate(devices):
+            response = _request(
+                app,
+                "POST",
+                "/passport/events",
+                {
+                    "device_id": device_id,
+                    "event_type": "inspection",
+                    "evidence_hex": f"g11-{i}".encode().hex(),
+                    "model_version_hash": "0x" + "ef" * 32,
+                    "actor_did": "did:bfa:client-2",
+                    "signature": f"0xg11-sig-{i}",
+                },
+            )
+            assert response.status_code == 200, response.text
+
+        ledger = _request(app, "GET", "/passport/all").json()
+        device_ids = {e["device_id"] for e in ledger}
+        assert set(devices) <= device_ids
+        stamps = [e["timestamp"] for e in ledger]
+        assert stamps == sorted(stamps, reverse=True)
+    finally:
+        passport.set_session(None)
+
+    print("[G11] passport_all_aggregates=True")
+    print("[G11] STATUS=PASS")
