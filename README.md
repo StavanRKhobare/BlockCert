@@ -1,8 +1,9 @@
 # BlockFedEDAuth-R
 
 Drift-triggered, blockchain-anchored rollback for federated semiconductor defect
-detection. See `/docs` for the full project report and architecture decision
-records (ADRs).
+detection. For the honest account of what's real, what's mock, and what's still
+missing, see `CONTEXT/Issues.md` and `gateway/routers/status.py` (`GET /status/limitations`);
+for the design rationale see `CONTEXT/context.md` and `docs/adr/`.
 
 ## Module map
 
@@ -33,10 +34,17 @@ records (ADRs).
 5. `fl-orchestrator/` — FedAvg round loop, client registration, aggregation.
    Runs entirely on `shared/mock_model` clients.
 6. `attribution-service/` — windowed culprit scoring, triggered by
-   `rollback-service` drift events.
+   `rollback-service` drift events. **On hold** (standing call — placeholder in server dashboard).
 7. `provenance-api/` — downstream passport lookups, depends only on `blockchain/`.
 8. `gateway/` — wire everything above together behind one API.
-9. `dashboard/` — build against `gateway/`'s mock-backed endpoints.
+9. `dashboard/` — two Vite apps (`dashboard/client` :5173, `dashboard/server` :5174)
+   polling the gateway; mock-backed until G10/G11 swapped in the live feed.
+
+**Status as of SD-G11 (2026-09-15):** steps 1–9 are built and green — both dashboards now
+poll live gateway state for round/stage/DIDs/transactions/passports and remain on deterministic
+replay (sliced by the live round) only for scores/checkpoints/stakes/disputes, which have **no
+gateway endpoint yet** — the spec gap documented in `CONTEXT/Issues.md` §1 and slated for G12.
+The full stack's known placeholders are enumerated in `GET /status/limitations`.
 
 **Swap-in step (once the vision model is ready):** implement
 `shared/interfaces/model_adapter.py`'s `ModelAdapter` in `vision-model/`, point
@@ -48,3 +56,13 @@ else in the repo needs to change.
 `infra/docker-compose.yml` spins up a local Ethereum-style testnet node (for
 `blockchain/`) and a local IPFS node (for `rollback-service/checkpoint_store/`)
 so every module above can be developed and tested fully offline.
+Currently `blockchain/` runs as a local `npx hardhat node` (port 8545) without
+Docker — the `gateway` keeps one continuous node for the whole session (see `RUNBOOK.md` §1).
+
+## Where to look for "what's real vs. what's still mock"
+
+- `CONTEXT/Issues.md` — consolidated, citation-backed gap list (this file's companion).
+- `gateway/routers/status.py` → `GET /status/limitations` — 10-entry machine-readable catalog.
+- `gateway/README.md`, `dashboard/client/README.md`, `dashboard/server/README.md` — per-module
+  Build Logs with exact live-vs-replay splits.
+- `RUNBOOK.md` §3–5 — what actually needs to be running for each layer.
