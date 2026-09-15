@@ -6,10 +6,12 @@ globals. Routers land in later stories; G0 wires only /health.
 
 from fastapi import FastAPI
 
+from routers.blockchain import router as blockchain_router
 from routers.clients import router as clients_router
 from routers.rounds import router as rounds_router
 
 app = FastAPI(title="BlockFedEDAuth-R gateway")
+app.include_router(blockchain_router)
 app.include_router(clients_router)
 app.include_router(rounds_router)
 

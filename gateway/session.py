@@ -60,6 +60,7 @@ for _d in (
         sys.path.insert(0, _d)
 
 from chain_clients.did_client import DIDClient, StakingClient
+from chain_bridge.chain_client import ChainClient  # rollback-service's
 from shared.interfaces.schemas import Checkpoint
 from shared.mock_model.mock_adapter import MockModelAdapter, make_golden_reference
 
@@ -121,6 +122,12 @@ class GatewaySession:
         self.checkpoint_store = LocalCheckpointStore()
         self.max_rounds: int = max_rounds
         self.autonomous_task: asyncio.Task | None = None  # Story G4
+        # Every gateway-originated chain write appends one record here
+        # (G5): {tx_hash, block_number, gas_used, function_called,
+        # contract_name, timestamp}. Receipt data comes from the local
+        # node, so logging is a read, never a second write.
+        self.transaction_log: list[dict] = []
+        self.chain_client = ChainClient()
         # On-chain identities, parallel to self.clients by index.
         self.did_client = DIDClient()
         self.staking_client = StakingClient()
@@ -161,6 +168,22 @@ class GatewaySession:
         # artificial pacing so dashboards polling at ~200-300ms intervals can observe stage progression; real processing time will replace this once the vision model adds actual training latency
         await asyncio.sleep(0.4)
 
+    def _log_tx(
+        self, tx_hash: str, function_called: str, contract_name: str
+    ) -> dict:
+        """Append one transaction record from the local receipt."""
+        receipt = self.did_client.w3.eth.get_transaction_receipt(tx_hash)
+        record = {
+            "tx_hash": tx_hash,
+            "block_number": int(receipt.blockNumber),
+            "gas_used": int(receipt.gasUsed),
+            "function_called": function_called,
+            "contract_name": contract_name,
+            "timestamp": int(time.time()),
+        }
+        self.transaction_log.append(record)
+        return record
+
     async def register_all_clients(self) -> None:
         """Register + fund all 8 clients on-chain, once (idempotent).
 
@@ -176,11 +199,13 @@ class GatewaySession:
             if not self.did_client.is_registered(did):
                 # Dummy public key: no real keypair infrastructure exists
                 # yet (known gap) — the string is an opaque placeholder.
-                self.did_client.register_did(
+                tx = self.did_client.register_did(
                     did, f"placeholder-pubkey-client-{i}", f"Client {i}"
                 )
+                self._log_tx(tx, "registerDID", "DIDRegistry")
             if self.staking_client.balance_of(did) == 0:
-                self.staking_client.stake(did, INITIAL_STAKE_WEI)
+                tx = self.staking_client.stake(did, INITIAL_STAKE_WEI)
+                self._log_tx(tx, "stake", "Staking")
         self._chain_ready = True
 
     async def step_round(self) -> dict:
@@ -225,6 +250,15 @@ class GatewaySession:
                 },
                 timestamp=time.time(),
             )
+            # Anchor the new head on-chain (G5). run_round never forwards a
+            # chain client into checkpoint_round (no such parameter exists),
+            # so nothing has anchored yet this round — gateway anchors the
+            # same reconstructed head post-round instead of changing
+            # fl-orchestrator. One anchor tx per checkpointed round.
+            anchor_tx = self.chain_client.anchor_checkpoint(
+                self.previous_checkpoint
+            )
+            self._log_tx(anchor_tx, "anchorCheckpoint", "CheckpointAnchor")
         await self.advance_stage("broadcasting")
         self.round_history.append(summary)
         # Per-client participation is certain (every client is submitted
