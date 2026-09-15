@@ -85,6 +85,10 @@ STAGES = (
     "broadcasting",
 )
 
+# Round from which client-3 turns poisoned (Story C5's verified scenario).
+ATTACK_START_ROUND = 12
+ATTACK_CLIENT_INDEX = 3
+
 
 # Placeholder initial stake: 1 ETH-equivalent in wei. Arbitrary — covers
 # registration economics for the demo; a real value needs tokenomics this
@@ -127,6 +131,23 @@ class GatewaySession:
             did: {"participated": 0, "passed": 0} for did in self.chain_dids
         }
         self._chain_ready = False
+        # C5 attacker wiring (Story G3): flag-driven patches on client-3,
+        # installed once here, flipped at ATTACK_START_ROUND in step_round.
+        # Verbatim copy of test_full_simulation.py's pattern — poisoned
+        # embeddings for auth, drifted training for aggregation weight.
+        self._attacker_armed = {"on": False}
+        victim_adapter = self.clients[ATTACK_CLIENT_INDEX].adapter
+        orig_embed = victim_adapter.embed
+        victim_adapter.embed = (
+            lambda images=None, n=16, poisoned=False: orig_embed(
+                images, n=n, poisoned=(poisoned or self._attacker_armed["on"])
+            )
+        )
+        victim_client = self.clients[ATTACK_CLIENT_INDEX]
+        orig_run_round = victim_client.run_round
+        victim_client.run_round = lambda inject_drift=False: orig_run_round(
+            inject_drift=(inject_drift or self._attacker_armed["on"])
+        )
         # Eager when possible (tests, scripts — no running loop), lazy
         # otherwise: under ASGI a loop is already running at construction,
         # so routers call register_all_clients() first (idempotent) instead.
@@ -166,6 +187,8 @@ class GatewaySession:
         if self.current_round >= self.max_rounds:
             return {"status": "max_rounds_reached"}
         self.current_round += 1
+        if self.current_round >= ATTACK_START_ROUND:
+            self._attacker_armed["on"] = True
         await self.advance_stage("authenticating_all")
         await self.advance_stage("aggregating")
         registry_size_before = len(self.checkpoint_registry)
