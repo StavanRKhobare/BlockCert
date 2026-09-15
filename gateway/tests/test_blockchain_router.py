@@ -80,8 +80,20 @@ def test_blockchain_transaction_feed():
                 session.staking_client.balance_of(did) > 0
                 for did in session.chain_dids
             )
+            # First-unregistered probe name: reruns must not re-register
+            # (the contract reverts on duplicates).
+            probe_index = 0
+            while True:
+                probe = (
+                    "did:bfa:g5-probe"
+                    if probe_index == 0
+                    else f"did:bfa:g5-probe-{probe_index}"
+                )
+                if not session.did_client.is_registered(probe):
+                    break
+                probe_index += 1
             probe_tx = session.did_client.register_did(
-                "did:bfa:g5-probe", "probe-pubkey", "G5 probe"
+                probe, "probe-pubkey", "G5 probe"
             )
             session._log_tx(probe_tx, "registerDID", "DIDRegistry")
             entries = _get(app, "/blockchain/transactions").json()

@@ -60,6 +60,7 @@ for _d in (
         sys.path.insert(0, _d)
 
 from chain_clients.did_client import DIDClient, StakingClient
+from chain_clients.dispute_staking_client import DisputeClient
 from chain_bridge.chain_client import ChainClient  # rollback-service's
 from shared.interfaces.schemas import Checkpoint
 from shared.mock_model.mock_adapter import MockModelAdapter, make_golden_reference
@@ -96,6 +97,15 @@ ATTACK_CLIENT_INDEX = 3
 # build does not have (same honesty standard as every other placeholder).
 INITIAL_STAKE_WEI = 1_000_000_000_000_000_000
 
+# Placeholder challenge window in seconds. Arbitrary — a real deployment
+# needs this empirically tuned (long enough for an honest operator to
+# notice and respond), not guessed. Tests override it per-session.
+CHALLENGE_WINDOW_SECONDS = 60
+
+# Placeholder slash policy: 10% of current stake per finalized rejection.
+# Not derived from any real economic analysis — flagged as policy stub.
+SLASH_FRACTION = 0.10
+
 
 class GatewaySession:
     def __init__(self, max_rounds: int = 20):
@@ -128,6 +138,12 @@ class GatewaySession:
         # node, so logging is a read, never a second write.
         self.transaction_log: list[dict] = []
         self.chain_client = ChainClient()
+        # Dispute/staking wiring (G6): open disputes by dispute_id, each
+        # {did, round_filed, deadline, status}. No overturn path exists in
+        # this build, so filed disputes finalize as rejected.
+        self.dispute_client = DisputeClient()
+        self.open_disputes: dict[int, dict] = {}
+        self.challenge_window_seconds = CHALLENGE_WINDOW_SECONDS
         # On-chain identities, parallel to self.clients by index.
         self.did_client = DIDClient()
         self.staking_client = StakingClient()
@@ -208,9 +224,42 @@ class GatewaySession:
                 self._log_tx(tx, "stake", "Staking")
         self._chain_ready = True
 
+    async def _settle_due_disputes(self) -> None:
+        """Finalize open disputes past their deadline; slash if rejected."""
+        # Chain head time, not wall time: deadlines are block.timestamps
+        # and the two can skew (observed: wall said past, chain said open).
+        now = int(
+            self.dispute_client.w3.eth.get_block("latest").timestamp
+        )
+        for dispute_id, record in self.open_disputes.items():
+            if record["status"] != "open" or now < record["deadline"]:
+                continue
+            tx = self.dispute_client.finalize(dispute_id)
+            self._log_tx(tx, "finalize", "Dispute")
+            onchain = self.dispute_client.get_dispute(dispute_id)
+            record["status"] = "finalized"
+            record["final_status"] = onchain["status"]
+            if onchain["status"] == "FinalizedRejected":
+                balance = self.staking_client.balance_of(record["did"])
+                amount = int(balance * SLASH_FRACTION)
+                if amount > 0:
+                    reason = (
+                        f"finalized rejection of dispute {dispute_id} "
+                        f"(filed round {record['round_filed']})"
+                    )
+                    slash_tx = self.staking_client.slash(
+                        record["did"], amount, reason
+                    )
+                    self._log_tx(slash_tx, "slash", "Staking")
+                    record["slashed_wei"] = amount
+
     async def step_round(self) -> dict:
         if self.current_round >= self.max_rounds:
             return {"status": "max_rounds_reached"}
+        # Settle last round's disputes first: anything past its challenge
+        # deadline finalizes (always as rejected — no overturn is wired to
+        # anything yet) and draws the placeholder 10% slash.
+        await self._settle_due_disputes()
         self.current_round += 1
         if self.current_round >= ATTACK_START_ROUND:
             self._attacker_armed["on"] = True
@@ -259,6 +308,43 @@ class GatewaySession:
                 self.previous_checkpoint
             )
             self._log_tx(anchor_tx, "anchorCheckpoint", "CheckpointAnchor")
+        # New failures open disputes (G6). Attribution boundary, stated not
+        # guessed: the summary carries only totals, so a failure is filed
+        # against the armed client — the only possible failure source in
+        # this build (honest fleet passes). One open dispute per did at a
+        # time; a production gateway needs per-client verdicts from
+        # run_round (same flagged boundary as G2's passed counts).
+        if summary.get("n_failed", 0) > 0 and self._attacker_armed["on"]:
+            victim_did = self.chain_dids[ATTACK_CLIENT_INDEX]
+            if not any(
+                d["did"] == victim_did and d["status"] == "open"
+                for d in self.open_disputes.values()
+            ):
+                reason = (
+                    f"failed authentication at round {self.current_round}"
+                )
+                dispute_id, tx = self.dispute_client.file_flag(
+                    victim_did,
+                    self.current_round,
+                    reason,
+                    self.challenge_window_seconds,
+                )
+                self._log_tx(tx, "fileFlag", "Dispute")
+                # Deadline read back ON-CHAIN (block.timestamp + window),
+                # never wall-computed: wall and chain clocks skew
+                # arbitrarily on test nodes (observed head +1500s vs wall
+                # after accumulated time-jumps), and only the chain value
+                # agrees with what finalize() will enforce. Guard and
+                # contract then share one clock by construction.
+                onchain_deadline = self.dispute_client.get_dispute(
+                    dispute_id
+                )["deadline"]
+                self.open_disputes[dispute_id] = {
+                    "did": victim_did,
+                    "round_filed": self.current_round,
+                    "deadline": onchain_deadline,
+                    "status": "open",
+                }
         await self.advance_stage("broadcasting")
         self.round_history.append(summary)
         # Per-client participation is certain (every client is submitted

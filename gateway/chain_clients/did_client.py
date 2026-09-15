@@ -112,5 +112,18 @@ class StakingClient:
         self.w3.eth.wait_for_transaction_receipt(tx_hash)
         return tx_hash.to_0x_hex()
 
+    def slash(self, did: str, amount_wei: int, reason: str) -> str:
+        """Slash a finalized-rejected did; return the tx hash (hex).
+
+        Staking.slash is onlyOwner — works because the deployer is
+        accounts[0], the same sender every bridge in this build uses.
+        """
+        sender = self.w3.eth.accounts[0]
+        tx_hash = self.contract.functions.slash(did, amount_wei, reason).transact(
+            {"from": sender}
+        )
+        self.w3.eth.wait_for_transaction_receipt(tx_hash)
+        return tx_hash.to_0x_hex()
+
     def balance_of(self, did: str) -> int:
         return int(self.contract.functions.balanceOf(did).call())

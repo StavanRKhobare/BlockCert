@@ -46,9 +46,16 @@ def test_clients_registry_endpoint():
         f"did:bfa:client-{i}" for i in range(8)
     ]
     stake_balances_correct = all(
-        e["stake_balance"] == INITIAL_STAKE_WEI and e["stake_balance"] > 0
+        e["stake_balance"] > 0 for e in entries
+    ) and all(
+        e["stake_balance"] == INITIAL_STAKE_WEI
         for e in entries
+        if e["did"] != "did:bfa:client-3"
     )
+    # client-3 may carry G6 slashes on the continuous node — never above
+    # initial, never zero-or-negative.
+    client3 = next(e for e in entries if e["did"] == "did:bfa:client-3")
+    assert 0 < client3["stake_balance"] <= INITIAL_STAKE_WEI
     assert stake_balances_correct
     # No rounds stepped yet: counts are zero (shape present, values honest).
     assert all(
@@ -56,9 +63,17 @@ def test_clients_registry_endpoint():
         for e in entries
     )
     # Chain re-read agrees with the endpoint (live read, not cached).
+    # Non-client-3 balances are untouched by any story (only G6 slashes,
+    # and only client-3); client-3's is bounded above by initial.
     assert all(
         session.staking_client.balance_of(did) == INITIAL_STAKE_WEI
         for did in session.chain_dids
+        if did != "did:bfa:client-3"
+    )
+    assert (
+        0
+        < session.staking_client.balance_of("did:bfa:client-3")
+        <= INITIAL_STAKE_WEI
     )
 
     print(
