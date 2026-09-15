@@ -284,7 +284,7 @@ function buildTransactions(): { txs: TransactionRecord[]; rounds: number[] } {
       gas_used: e.event_type === "slashed" ? 47120 : 44880,
     });
   }
-  DISPUTES.forEach((d, i) => {
+  DISPUTES.forEach((_d, i) => {
     specs.push({
       round: DISPUTE_ROUNDS[i],
       function_called: i === 0 ? "openDispute" : "updateDisputeStatus",
