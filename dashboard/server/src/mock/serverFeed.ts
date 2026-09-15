@@ -37,6 +37,7 @@ import type {
   Checkpoint,
   Dispute,
   DriftEvent,
+  PassportEntry,
   StakeEvent,
   SuspicionScore,
   SystemStage,
@@ -322,3 +323,71 @@ export const DRIFT_EVENTS: DriftEvent[] = [
   },
 ];
 export const DRIFT_EVENT_ROUND = 17;
+
+// System-wide passport submissions (SD9 addition — SD2 scoped the feed to
+// chain/auth data; CD7-pattern extension). The 3 device-7 entries are
+// verbatim copies of the client app's submissions (same device, hashes,
+// rounds, actor) so both dashboards agree side by side; the device-12 and
+// device-21 entries are structural mock filler showing OTHER clients'
+// devices (the backend has no multi-device series yet — flagged here).
+// Evidence hashes for the filler entries reuse the deterministic demo-hash
+// helper (fabricated identifiers, like the transaction hashes).
+export const PASSPORT_ENTRIES: PassportEntry[] = [
+  {
+    device_id: "device-7",
+    event_type: "repair",
+    evidence_hash:
+      "b1f5d4bbc877d620aaa0c3fe4be88b566bcbb9c7cf428eb4410d397d4fe32eed",
+    model_version_hash: WEIGHTS_HASHES[3],
+    ai_prediction: 0.12,
+    actor_did: "did:example:client-3",
+    signature: "0xmock-signature-repair-001",
+    timestamp: BASE_TIMESTAMP + 4 * ROUND_SECONDS,
+  },
+  {
+    device_id: "device-12",
+    event_type: "repair",
+    evidence_hash: demoTxHash(100),
+    model_version_hash: WEIGHTS_HASHES[6],
+    ai_prediction: 0.05,
+    actor_did: "did:example:client-5",
+    signature: "0xmock-signature-repair-004",
+    timestamp: BASE_TIMESTAMP + 7 * ROUND_SECONDS,
+  },
+  {
+    device_id: "device-7",
+    event_type: "resale",
+    evidence_hash:
+      "02bd8b55c657938d20def42764dba8e6613c1a98f140c766e8bf95ded7037e96",
+    model_version_hash: WEIGHTS_HASHES[8],
+    ai_prediction: 0.08,
+    actor_did: "did:example:client-3",
+    signature: "0xmock-signature-resale-002",
+    timestamp: BASE_TIMESTAMP + 9 * ROUND_SECONDS,
+  },
+  {
+    device_id: "device-7",
+    event_type: "inspection",
+    evidence_hash:
+      "8fa2305e4a6166159856bebcf8f608ff3125dc9a1fca2cd66b810c366bfbf825",
+    model_version_hash: WEIGHTS_HASHES[14],
+    ai_prediction: 0.31,
+    actor_did: "did:example:client-3",
+    signature: "0xmock-signature-inspection-003",
+    timestamp: BASE_TIMESTAMP + 15 * ROUND_SECONDS,
+  },
+  {
+    device_id: "device-21",
+    event_type: "resale",
+    evidence_hash: demoTxHash(101),
+    model_version_hash: WEIGHTS_HASHES[17],
+    ai_prediction: 0.19,
+    actor_did: "did:example:client-2",
+    signature: "0xmock-signature-resale-005",
+    timestamp: BASE_TIMESTAMP + 18 * ROUND_SECONDS,
+  },
+];
+
+// PassportEntry has no round field (backend type matched exactly), so the
+// round each entry was "submitted" in lives here, internal to the mock.
+export const PASSPORT_ENTRY_ROUNDS: number[] = [4, 7, 9, 15, 18];

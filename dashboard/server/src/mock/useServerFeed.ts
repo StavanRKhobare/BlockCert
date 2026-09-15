@@ -11,6 +11,8 @@ import {
   DISPUTE_ROUNDS,
   DRIFT_EVENTS,
   DRIFT_EVENT_ROUND,
+  PASSPORT_ENTRIES,
+  PASSPORT_ENTRY_ROUNDS,
   STAGE_DURATION_MS,
   STAKE_EVENTS,
   SUSPICION_SCORES,
@@ -23,6 +25,7 @@ import type {
   Checkpoint,
   Dispute,
   DriftEvent,
+  PassportEntry,
   StakeEvent,
   SuspicionScore,
   SystemStage,
@@ -49,6 +52,8 @@ export interface ServerFeed {
   disputes: Dispute[];
   transactions: TransactionRecord[];
   driftEvents: DriftEvent[];
+  // SD9: system-wide passport submissions, sliced to completed rounds.
+  passportEntries: PassportEntry[];
 }
 
 export function useServerFeedState(): ServerFeed {
@@ -112,6 +117,9 @@ export function useServerFeedState(): ServerFeed {
     ),
     driftEvents: DRIFT_EVENTS.filter(
       () => DRIFT_EVENT_ROUND <= progress.round,
+    ),
+    passportEntries: PASSPORT_ENTRIES.filter(
+      (_, i) => PASSPORT_ENTRY_ROUNDS[i] <= progress.round,
     ),
   };
 }
